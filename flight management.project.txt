@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a flight
+struct Flight {
+    int flightNumber;
+    char destination[50];
+    int availableSeats; // Seats available for booking
+    int totalSeats;     // Total number of seats on the flight
+};
+
+// Function to add a flight
+void addFlight(struct Flight *flights, int *count) {
+    printf("Enter flight number: ");
+    scanf("%d", &flights[*count].flightNumber);
+    getchar(); // Consume the newline character left by scanf
+
+    printf("Enter destination: ");
+    fgets(flights[*count].destination, 50, stdin);
+    flights[*count].destination[strcspn(flights[*count].destination, "\n")] = '\0'; // Remove newline
+
+    printf("Enter total seats: ");
+    scanf("%d", &flights[*count].totalSeats);
+
+    flights[*count].availableSeats = flights[*count].totalSeats; // Initially all seats are available
+    (*count)++;
+    printf("Flight added successfully!\n");
+}
+
+// Function to display all flights
+void displayFlights(struct Flight *flights, int count) {
+    if (count == 0) {
+        printf("No flights available.\n");
+    } else {
+        printf("\nList of Flights:\n");
+        printf("Number\tDestination\tAvailable Seats\tTotal Seats\n");
+        printf("-----------------------------------------------------\n");
+        for (int i = 0; i < count; i++)
+        {
+         printf("%d\t%s\t\t%d\t\t%d\n", flights[i].flightNumber, flights[i].destination, 
+                   flights[i].availableSeats, flights[i].totalSeats);
+        }
+    }
+}
+
+// Function to book a seat on a flight
+void bookSeat(struct Flight *flights, int count) {
+    int number;
+    printf("Enter flight number to book: ");
+    scanf("%d", &number);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (flights[i].flightNumber == number) {
+            if (flights[i].availableSeats > 0) {
+                flights[i].availableSeats--; // Decrease available seats
+                printf("Successfully booked a seat on flight to %s.\n", flights[i].destination);
+            } else {
+                printf("Sorry, no seats available for booking.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Flight not found.\n");
+    }
+}
+
+// Function to cancel a booked seat on a flight
+void cancelSeat(struct Flight *flights, int count) {
+    int number;
+    printf("Enter flight number to cancel booking: ");
+    scanf("%d", &number);
+int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (flights[i].flightNumber == number) {
+            if (flights[i].availableSeats < flights[i].totalSeats) {
+                flights[i].availableSeats++; // Increase available seats
+                printf("Successfully canceled a seat booking on flight to %s.\n", flights[i].destination);
+            } else {
+                printf("No seats have been booked on this flight.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Flight not found.\n");
+    }
+}
+
+int main() {
+    struct Flight flights[100]; // Array to store flights
+    int count = 0;             // Number of flights in the system
+    int choice;
+
+    while (1) {
+        printf("\nFlight Management System\n");
+        printf("1. Add Flight\n");
+        printf("2. Display All Flights\n");
+        printf("3. Book Seat\n");
+        printf("4. Cancel Seat\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) 
+        {
+            case 1:
+                addFlight(flights, &count);
+                break;
+            case 2:
+                displayFlights(flights, count);
+                break;
+            case 3:
+                bookSeat(flights, count);
+                break;
+            case 4:
+                cancelSeat(flights, count);
+                break;
+            case 5:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    
+    return 0;
+}
+
